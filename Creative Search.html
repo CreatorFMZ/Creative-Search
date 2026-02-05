@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Creative Search</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+  <style>
+    :root {
+      --bg: #202124;
+      --bg-alt: #171717;
+      --surface: #303134;
+      --text: #e8eaed;
+      --text-secondary: #9aa0a6;
+      --border: #5f6368;
+      --accent: #8ab4f8;
+      --logo-gradient: linear-gradient(90deg, #8ab4f8, #c58af9, #f48fb1);
+    }
+
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --bg-alt: #f1f3f4;
+      --surface: #f8f9fa;
+      --text: #202124;
+      --text-secondary: #5f6368;
+      --border: #dadce0;
+      --accent: #1a73e8;
+      --logo-gradient: linear-gradient(90deg, #4285f4, #9b72cb, #ea4335);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 14px;
+    }
+
+    header select, header button {
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius: 4px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    header button:hover, header select:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    [data-theme="light"] header button:hover,
+    [data-theme="light"] header select:hover {
+      background: rgba(0,0,0,0.05);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .main-logo h1 {
+      font-size: clamp(48px, 12vw, 80px);
+      font-weight: 500;
+      letter-spacing: -4px;
+      background: var(--logo-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .search-container {
+      width: min(620px, 92vw);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .engine-selector-wrapper {
+      position: relative;
+      width: 200px;
+    }
+
+    .engine-selector {
+      appearance: none;
+      width: 100%;
+      padding: 8px 36px 8px 44px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .engine-selector-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+    }
+
+    .lang-selector {
+      padding: 8px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .search-box-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .search-box {
+      width: 100%;
+      height: 48px;
+      padding: 0 20px 0 56px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 16px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-box:hover, .search-box:focus {
+      box-shadow: 0 1px 6px rgba(0,0,0,0.15);
+      border-color: var(--accent);
+      background: var(--bg);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      pointer-events: none;
+      font-size: 18px;
+      z-index: 1;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 14px;
+      padding: 12px 20px;
+      cursor: pointer;
+      min-width: 130px;
+      transition: all 0.15s;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    footer {
+      background: var(--bg-alt);
+      padding: 16px 24px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      position: relative;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+
+    .footer-links a:hover { text-decoration: underline; }
+
+    #settingsBtn {
+      position: absolute;
+      right: 24px;
+      bottom: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+
+    #settingsBtn:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .about-page {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.6;
+    }
+
+    .about-page h1 {
+      margin-bottom: 24px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="engine-selector-wrapper">
+      <img id="currentEngineIcon" class="engine-selector-icon" src="https://www.bing.com/favicon.ico" alt="">
+      <select id="engineSelect" class="engine-selector">
+        <option value="google"     data-icon="https://www.google.com/favicon.ico">Google</option>
+        <option value="bing"       data-icon="https://www.bing.com/favicon.ico" selected>Bing</option>
+        <option value="duckduckgo" data-icon="https://duckduckgo.com/favicon.ico">DuckDuckGo</option>
+        <option value="brave"      data-icon="https://search.brave.com/static/favicon-32x32.png">Brave</option>
+        <option value="yahoo"      data-icon="https://s.yimg.com/rz/p/yahoo_favicon_32.png">Yahoo</option>
+        <option value="ecosia"     data-icon="https://www.ecosia.org/static/icons/favicon.ico">Ecosia</option>
+        <option value="baidu"      data-icon="https://www.baidu.com/favicon.ico">百度</option>
+        <option value="yandex"     data-icon="https://yandex.com/favicon.ico">Yandex</option>
+      </select>
+    </div>
+
+    <div style="display: flex; gap: 16px; align-items: center;">
+      <select id="langSelect" class="lang-selector">
+        <option value="zh-CN" selected>中文</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+      </select>
+
+      <button id="themeToggle">☀️</button>
+
+      <a href="#about" id="aboutLink">关于</a>
+    </div>
+  </header>
+
+  <main id="mainPage">
+    <div class="main-logo">
+      <h1>Creative Search</h1>
+    </div>
+
+    <form id="searchForm" class="search-container" method="get" target="_blank">
+      <div class="search-box-wrapper">
+        <div class="search-icon">🔍</div>
+        <input type="text" id="searchInput" class="search-box" name="q" placeholder="探索任何内容..." autocomplete="off" autofocus>
+      </div>
+
+      <div class="buttons">
+        <button class="btn" type="submit">Creative 搜索</button>
+        <button id="luckyBtn" class="btn" type="button">手气不错</button>
+      </div>
+    </form>
+  </main>
+
+  <div id="aboutPage" class="about-page" style="display:none;">
+    <h1>关于 Creative Search</h1>
+    <p>一个简洁、快速、尊重隐私的搜索入口。</p>
+    <p>Powered by：</p>
+    <ul>
+      <li>Google</li>
+      <li>Bing</li>
+      <li>DuckDuckGo</li>
+      <li>Brave Search</li>
+      <li>Yahoo</li>
+      <li>Ecosia</li>
+      <li>百度</li>
+      <li>Yandex</li>
+    </ul>
+    <p style="text-align:center; margin-top:40px;">
+      <a href="#" id="backLink">← 返回搜索页</a>
+    </p>
+  </div>
+
+  <footer>
+    <div id="locationText">用户所在地 / Worldwide</div>
+    <div>Creative Search © Fantastic Star 2026</div>
+    <div class="footer-links">
+      <a href="#">隐私</a>
+      <a href="#">条款</a>
+      <a href="#about" id="footerAbout">关于</a>
+    </div>
+    <div id="settingsBtn" title="设置国家">⚙️</div>
+  </footer>
+
+  <script>
+    // 元素引用
+    const form = document.getElementById('searchForm');
+    const engineSelect = document.getElementById('engineSelect');
+    const currentIcon = document.getElementById('currentEngineIcon');
+    const input = document.getElementById('searchInput');
+    const langSelect = document.getElementById('langSelect');
+    const locationElement = document.getElementById('locationText');
+
+    // 搜索引擎配置
+    const engines = {
+      google:     { url: 'https://www.google.com/search',     param: 'q' },
+      bing:       { url: 'https://www.bing.com/search',       param: 'q' },
+      duckduckgo: { url: 'https://duckduckgo.com/',           param: 'q' },
+      brave:      { url: 'https://search.brave.com/search',   param: 'q' },
+      yahoo:      { url: 'https://search.yahoo.com/search',   param: 'p' },
+      ecosia:     { url: 'https://www.ecosia.org/search',     param: 'q' },
+      baidu:      { url: 'https://www.baidu.com/s',           param: 'wd' },
+      yandex:     { url: 'https://yandex.com/search/',        param: 'text' }
+    };
+
+    function updateEngine() {
+      const e = engineSelect.value;
+      form.action = engines[e].url;
+      input.name = engines[e].param;
+      const selectedOption = engineSelect.options[engineSelect.selectedIndex];
+      currentIcon.src = selectedOption.dataset.icon || 'https://www.google.com/favicon.ico';
+    }
+
+    engineSelect.addEventListener('change', () => {
+      updateEngine();
+      localStorage.setItem('engine', engineSelect.value);
+    });
+
+    // 语言配置
+    const placeholderTexts = {
+      'zh-CN': '探索任何内容...',
+      'en':    'Search anything...',
+      'ja':    '何でも検索...',
+      'ko':    '무엇이든 검색...'
+    };
+
+    const searchBtnText = {
+      'zh-CN': 'Creative 搜索',
+      'en':    'Creative Search',
+      'ja':    'Creative 検索',
+      'ko':    'Creative 검색'
+    };
+
+    function updateLanguage() {
+      const lang = langSelect.value;
+      input.placeholder = placeholderTexts[lang] || placeholderTexts['zh-CN'];
+      document.querySelector('.buttons .btn[type="submit"]').textContent = 
+        searchBtnText[lang] || searchBtnText['zh-CN'];
+      document.documentElement.lang = lang;
+    }
+
+    langSelect.addEventListener('change', () => {
+      updateLanguage();
+      localStorage.setItem('lang', langSelect.value);
+    });
+
+    // 主题切换
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+
+    function initTheme() {
+      const saved = localStorage.getItem('theme') || 
+                    (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      html.setAttribute('data-theme', saved);
+      themeToggle.textContent = saved === 'light' ? '🌙' : '☀️';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      themeToggle.textContent = next === 'light' ? '🌙' : '☀️';
+    });
+
+    initTheme();
+
+    // 关于页面切换
+    const mainPage = document.getElementById('mainPage');
+    const aboutPage = document.getElementById('aboutPage');
+    document.querySelectorAll('#aboutLink, #footerAbout').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        mainPage.style.display = 'none';
+        aboutPage.style.display = 'block';
+      });
+    });
+
+    document.getElementById('backLink').addEventListener('click', e => {
+      e.preventDefault();
+      mainPage.style.display = 'flex';
+      aboutPage.style.display = 'none';
+    });
+
+    // 表单行为
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        form.submit();
+      }
+    });
+
+    document.getElementById('luckyBtn').addEventListener('click', () => {
+      const destinations = [
+        'https://duckgame.oneapp.dev/',
+        'https://deeplost.oneapp.dev/'
+      ];
+      window.open(destinations[Math.floor(Math.random() * destinations.length)], '_blank');
+    });
+
+    // 国家设置逻辑（仅国家代码，无IP检测）
+    function getDisplayCountry(code) {
+      if (!code) return 'Worldwide';
+      const upper = code.toUpperCase();
+      return upper === 'CN' ? '中国' : upper;
+    }
+
+    function updateLocationDisplay() {
+      const code = localStorage.getItem('manualCountryCode') || '';
+      locationElement.textContent = `用户所在地 / ${getDisplayCountry(code)}`;
+    }
+
+    function applyDefaultSettings(code = '') {
+      const upper = code.toUpperCase();
+      const needSet = !localStorage.getItem('lang') || !localStorage.getItem('engine');
+
+      if (needSet) {
+        if (upper === 'CN') {
+          langSelect.value = 'zh-CN';
+          localStorage.setItem('lang', 'zh-CN');
+          engineSelect.value = 'bing';
+          localStorage.setItem('engine', 'bing');
+        } else {
+          langSelect.value = 'en';
+          localStorage.setItem('lang', 'en');
+          engineSelect.value = 'google';
+          localStorage.setItem('engine', 'google');
+        }
+        updateLanguage();
+        updateEngine();
+      }
+    }
+
+    // 设置国家函数（共享于首次提示和设置按钮）
+    function setCountry() {
+      const current = localStorage.getItem('manualCountryCode') || '';
+      const input = prompt(
+        '请输入国家代码（ISO 3166-1 alpha-2，例如 CN、US、JP 等）。\n' +
+        '如果为 CN，将默认使用中文 + Bing；其他或留空将默认使用 English + Google。',
+        current
+      );
+
+      if (input === null) return; // 取消
+
+      const trimmed = input.trim();
+      if (trimmed) {
+        localStorage.setItem('manualCountryCode', trimmed.toUpperCase());
+      } else {
+        localStorage.removeItem('manualCountryCode');
+      }
+
+      updateLocationDisplay();
+      applyDefaultSettings(trimmed);
+    }
+
+    // 设置按钮
+    document.getElementById('settingsBtn').addEventListener('click', setCountry);
+
+    // 页面加载初始化
+    window.addEventListener('load', () => {
+      // 恢复保存的引擎和语言（优先级最高）
+      const savedEngine = localStorage.getItem('engine');
+      if (savedEngine) {
+        engineSelect.value = savedEngine;
+      }
+      updateEngine();
+
+      const savedLang = localStorage.getItem('lang');
+      if (savedLang) {
+        langSelect.value = savedLang;
+      }
+      updateLanguage();
+
+      // 更新位置显示
+      updateLocationDisplay();
+
+      // 首次访问：弹出国家设置提示（只出现一次）
+      if (!localStorage.getItem('countryConfigured')) {
+        setTimeout(() => {
+          const input = prompt(
+            '欢迎首次使用 Creative Search！\n\n' +
+            '为了提供更合适的默认语言和搜索引擎，请输入您的国家代码（ISO 3166-1 alpha-2，例如 CN、US、JP 等）。\n' +
+            'CN 将默认中文 + Bing，其他或留空将默认 English + Google。\n\n' +
+            '您可随时通过右下角 ⚙️ 按钮修改。',
+            ''
+          );
+
+          if (input !== null) {
+            const trimmed = input.trim();
+            if (trimmed) {
+              localStorage.setItem('manualCountryCode', trimmed.toUpperCase());
+            } else {
+              localStorage.removeItem('manualCountryCode');
+            }
+            updateLocationDisplay();
+            applyDefaultSettings(trimmed);
+            localStorage.setItem('countryConfigured', 'true');
+          }
+        }, 800);
+      } else {
+        // 非首次：如果之前未设置过语言/引擎，根据当前国家代码应用默认
+        applyDefaultSettings(localStorage.getItem('manualCountryCode') || '');
+      }
+    });
+  </script>
+
+</body>
+</html>
